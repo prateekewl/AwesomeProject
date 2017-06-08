@@ -1,53 +1,93 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
+  Text,
   AppRegistry,
   StyleSheet,
-  Text,
-  View
-} from 'react-native';
+  View,
+  StatusBar
+  } from 'react-native'
 
-export default class AwesomeProject extends Component {
+import Icon from 'react-native-vector-icons/Ionicons'
+import {fetchWeather} from './weatherAPI'
+class App extends Component {
+
+  componentWillMount(){
+    this.state = {
+      temp: 0,
+      weather: 'Clear'
+    }
+  }
+
+  componentDidMount() {
+    this.getLocation()
+  }
+
+  getLocation() {
+    navigator.geolocation.getCurrentPosition(
+      (posData)  =>  fetchWeather(posData.coords.latitude,posData.coords.longtitude)
+      .then(res => this.setState({
+        temp:res.temp,
+        weather:res.weather
+      })),
+      (error) => alert(error),
+      {timeout: 10000}
+    )
+  }
+
   render() {
-    return (
+    console.log('component is rendering')
+    return(
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+        <StatusBar hidden={true}/>
+        <View style={styles.header}>
+          <Icon name ={'ios-sunny'} size={80} color={'white'}/>
+          <Text style={styles.temp}>{this.state.temp}°</Text>
+        </View>
+        <View style={styles.body}>
+          <Text style={styles.title}>
+            Building <Text style={{color: 'red'}}>Prateek's</Text> Weather App</Text>
+          <Text style={styles.subtitle}> Let's make it rain</Text>
+        </View>
       </View>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    flex:1,
+    backgroundColor: '#FFD017'
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    justifyContent: 'space-around', 
+    flex:1, 
+    // backgroundColor:'blue'
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  temp:{
+    fontFamily: 'HelveticaNeue-Bold',
+    fontSize: 45,
+    color: 'white',
   },
-});
+  body: {
+    alignItems: 'flex-start', 
+    justifyContent: 'flex-end', 
+    flex:5 , 
+    // backgroundColor:'red',
+    margin: 10
+  },
+  title:{
+    fontFamily: 'HelveticaNeue-Bold',
+    fontSize: 78,
+    color: 'white',
+    marginBottom:5
+  },
+  subtitle:{
+    fontFamily: 'HelveticaNeue-Medium',
+    fontSize: 16,
+    color: 'white',
+  },
+})
 
-AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+AppRegistry.registerComponent('AwesomeProject', () => App)
